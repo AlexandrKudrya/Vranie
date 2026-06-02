@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ПРАВДА</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Onest:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --card: #12121a;
+    --accent: #ff3c6e;
+    --accent2: #ff8c42;
+    --text: #f0eee8;
+    --muted: #6b6880;
+    --border: #1e1e2e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Onest', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  .screen { display: none; }
+  .screen.active { display: flex; }
+
+  /* ===== INTRO SCREEN ===== */
+  #intro {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+    text-align: center;
+    position: relative;
+  }
+
+  .glow-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+  .blob1 { width: 400px; height: 400px; background: rgba(255,60,110,0.12); top: -100px; left: -100px; }
+  .blob2 { width: 300px; height: 300px; background: rgba(255,140,66,0.08); bottom: 0; right: -80px; }
+
+  .logo {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(56px, 15vw, 120px);
+    font-weight: 900;
+    letter-spacing: -4px;
+    line-height: 1;
+    background: linear-gradient(135deg, #ff3c6e, #ff8c42);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  .tagline {
+    font-size: 14px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 60px;
+  }
+
+  .categories-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    max-width: 500px;
+    margin-bottom: 50px;
+  }
+
+  .cat-tag {
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 500;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .cat-tag.selected { opacity: 1; }
+  .cat-tag.unselected { opacity: 0.35; }
+
+  .cat-tag[data-cat="shame"]    { color: #ff6b9d; border-color: #ff6b9d33; background: #ff6b9d0d; }
+  .cat-tag[data-cat="deep"]     { color: #a78bfa; border-color: #a78bfa33; background: #a78bfa0d; }
+  .cat-tag[data-cat="social"]   { color: #34d399; border-color: #34d39933; background: #34d3990d; }
+  .cat-tag[data-cat="romantic"] { color: #fb923c; border-color: #fb923c33; background: #fb923c0d; }
+  .cat-tag[data-cat="wild"]     { color: #f59e0b; border-color: #f59e0b33; background: #f59e0b0d; }
+
+  .cat-tag.selected[data-cat="shame"]    { background: #ff6b9d22; }
+  .cat-tag.selected[data-cat="deep"]     { background: #a78bfa22; }
+  .cat-tag.selected[data-cat="social"]   { background: #34d39922; }
+  .cat-tag.selected[data-cat="romantic"] { background: #fb923c22; }
+  .cat-tag.selected[data-cat="wild"]     { background: #f59e0b22; }
+
+  .start-btn {
+    background: linear-gradient(135deg, #ff3c6e, #ff8c42);
+    border: none;
+    color: white;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 18px 48px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 40px rgba(255,60,110,0.3);
+  }
+  .start-btn:hover { transform: scale(1.04); box-shadow: 0 0 60px rgba(255,60,110,0.45); }
+  .start-btn:active { transform: scale(0.98); }
+
+  .count-info {
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* ===== GAME SCREEN ===== */
+  #game {
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 24px 20px;
+    max-width: 680px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .game-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+  }
+
+  .back-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 16px;
+    border-radius: 100px;
+    cursor: pointer;
+    font-family: 'Onest', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { border-color: var(--muted); color: var(--text); }
+
+  .progress-area { flex: 1; margin: 0 20px; }
+
+  .progress-bar-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff3c6e, #ff8c42);
+    border-radius: 100px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+
+  .game-logo {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #ff3c6e, #ff8c42);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .question-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+  }
+
+  .cat-badge {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 24px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1px solid;
+    transition: all 0.3s;
+  }
+
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px 40px;
+    text-align: center;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s;
+  }
+
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #ff3c6e, #ff8c42);
+    opacity: 0.6;
+  }
+
+  .question-number {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+
+  .question-text {
+    font-size: clamp(20px, 4vw, 28px);
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text);
+    transition: opacity 0.3s;
+  }
+
+  .question-card.animating .question-text { opacity: 0; }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    width: 100%;
+  }
+
+  .btn-next {
+    flex: 1;
+    background: linear-gradient(135deg, #ff3c6e, #ff8c42);
+    border: none;
+    color: white;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 18px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 8px 32px rgba(255,60,110,0.25);
+  }
+  .btn-next:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(255,60,110,0.35); }
+  .btn-next:active { transform: translateY(0); }
+
+  .btn-skip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Onest', sans-serif;
+    font-size: 13px;
+    padding: 18px 24px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-skip:hover { border-color: var(--muted); color: var(--text); }
+
+  /* ===== END SCREEN ===== */
+  #end {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .end-emoji { font-size: 72px; margin-bottom: 24px; }
+  .end-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(28px, 8vw, 48px);
+    font-weight: 900;
+    background: linear-gradient(135deg, #ff3c6e, #ff8c42);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  .end-sub { color: var(--muted); font-size: 15px; margin-bottom: 40px; line-height: 1.6; }
+  .restart-btn {
+    background: none;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Unbounded', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 16px 36px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .restart-btn:hover { background: var(--accent); color: white; }
+
+  @media (max-width: 480px) {
+    .question-card { padding: 36px 24px; }
+    .controls { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div id="intro" class="screen active">
+  <div class="glow-blob blob1"></div>
+  <div class="glow-blob blob2"></div>
+  <div class="logo">ПРАВДА</div>
+  <div class="tagline">200 вопросов · 18+</div>
+
+  <div class="categories-preview">
+    <span class="cat-tag selected" data-cat="shame">😳 Стыдное</span>
+    <span class="cat-tag selected" data-cat="deep">🌀 Глубокое</span>
+    <span class="cat-tag selected" data-cat="social">👥 Социальное</span>
+    <span class="cat-tag selected" data-cat="romantic">🔥 Романтика</span>
+    <span class="cat-tag selected" data-cat="wild">🤪 Безумное</span>
+  </div>
+
+  <button class="start-btn" onclick="startGame()">НАЧАТЬ ИГРУ</button>
+  <div class="count-info" id="count-info">200 вопросов выбрано</div>
+</div>
+
+<!-- GAME -->
+<div id="game" class="screen">
+  <div class="game-header">
+    <button class="back-btn" onclick="goHome()">← Назад</button>
+    <div class="progress-area">
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <div class="progress-label" id="progress-label">0 / 0</div>
+    </div>
+    <div class="game-logo">ПРАВДА</div>
+  </div>
+
+  <div class="question-area">
+    <div class="cat-badge" id="cat-badge">—</div>
+    <div class="question-card" id="question-card">
+      <div class="question-number" id="question-number">ВОПРОС 1</div>
+      <div class="question-text" id="question-text">...</div>
+    </div>
+    <div class="controls">
+      <button class="btn-next" onclick="nextQuestion()">СЛЕДУЮЩИЙ →</button>
+      <button class="btn-skip" onclick="skipQuestion()">Пропустить</button>
+    </div>
+  </div>
+</div>
+
+<!-- END -->
+<div id="end" class="screen">
+  <div class="end-emoji">🎉</div>
+  <div class="end-title">Вопросы кончились</div>
+  <div class="end-sub">Надеемся, вы узнали друг о друге<br>что-то интересное (или пожалели)</div>
+  <button class="restart-btn" onclick="restartGame()">Сыграть снова</button>
+</div>
+
+<script>
+const QUESTIONS = {
+  shame: [
+    "Какой твой самый позорный момент в жизни?",
+    "Что-то такое, за что тебе до сих пор стыдно, но ты никому не рассказывал?",
+    "Самое неловкое, что с тобой случалось при людях?",
+    "Ты когда-нибудь притворялся, что не знаешь человека, чтобы избежать разговора?",
+    "Самая глупая причина, по которой ты плакал?",
+    "Что-то, что ты делал в одиночестве и надеешься, что никто не видел?",
+    "Самый стыдный поиск в твоём браузере за последний месяц?",
+    "Ты когда-нибудь врал о том, что читал какую-то книгу или смотрел фильм?",
+    "Самый дурацкий страх, который у тебя есть?",
+    "Что-то, что ты купил в интернете и стыдишься признать?",
+    "Ты когда-нибудь воровал? Что именно?",
+    "Самое неловкое сообщение, которое ты отправил не тому человеку?",
+    "Что ты делал на последней вечеринке, о чём теперь жалеешь?",
+    "Признайся в чём-то, за что тебя могут осудить здесь присутствующие",
+    "Самая нелепая вещь, которой ты боялся в детстве и до сих пор немного боишься?",
+    "Тебя когда-нибудь ловили на лжи в самый неподходящий момент?",
+    "Что-то постыдное, что ты делал ради денег?",
+    "Самая странная привычка, о которой почти никто не знает?",
+    "Ты когда-нибудь симулировал болезнь, чтобы избежать чего-то?",
+    "Какой твой тайный порок, который ты тщательно скрываешь?",
+    "Самое смущающее, что ты когда-либо гуглил?",
+    "Признайся в чём-то, чего ты никогда не делал, но все думают, что делал",
+    "Ты когда-нибудь читал чужую переписку? Чью?",
+    "Что-то, что ты до сих пор делаешь по-детски, хотя давно взрослый?",
+    "Самый неловкий момент на свидании или попытке флирта?",
+    "Ты когда-нибудь плакал от злости и пытался скрыть это?",
+    "Что-то, что ты ел тайком, потому что стыдно признавать?",
+    "Самый странный сон, который ты запомнил и не хочешь рассказывать?",
+    "Ты когда-нибудь провалил что-то важное из-за банальной лени?",
+    "Что ты сделал из зависти к кому-то из присутствующих?",
+    "Самое неловкое, что с тобой случилось из-за алкоголя?",
+    "Что ты до сих пор не умеешь делать, хотя все думают, что умеешь?",
+    "Ты когда-нибудь притворялся, что спишь, чтобы не разговаривать?",
+    "Самый дурацкий повод, по которому ты поссорился с кем-то близким?",
+    "Что-то, о чём ты врал родителям и так и не признался?",
+    "Ты когда-нибудь ставил дизлайк из зависти?",
+    "Самый позорный текст или пост, который ты когда-либо написал?",
+    "Что ты делаешь наедине с собой, о чём точно не расскажешь первым?",
+    "Ты когда-нибудь использовал кого-то ради выгоды и потом сожалел об этом?",
+    "Самая глупая трата денег за последний год?"
+  ],
+  deep: [
+    "Что тебя пугает в самом себе?",
+    "Есть ли что-то, что ты так и не простил себе?",
+    "Какой момент в жизни изменил тебя больше всего?",
+    "Что ты хотел бы сказать человеку, которого уже нет рядом?",
+    "Чего ты на самом деле хочешь от жизни, если убрать все чужие ожидания?",
+    "Когда ты в последний раз чувствовал себя по-настоящему счастливым — и почему это закончилось?",
+    "Что в твоём характере ты хотел бы изменить, но не можешь?",
+    "Есть ли решение, которое ты принял и до сих пор не знаешь — правильным ли оно было?",
+    "Что ты никогда не говоришь вслух, но часто думаешь?",
+    "Что тебя тревожит прямо сейчас, о чём ты молчишь?",
+    "Кем ты хотел стать в детстве и насколько ты от этого далеко?",
+    "Если бы ты знал, что никто не осудит — что бы ты изменил в своей жизни прямо сейчас?",
+    "Есть ли человек, которому ты завидуешь по-настоящему — и почему именно ему?",
+    "Что ты никогда не скажешь своим родителям, хотя хотел бы?",
+    "Какой страх управляет тобой больше всего?",
+    "Ты когда-нибудь думал, что тебя не понимает никто?",
+    "Что для тебя значит одиночество — ты его боишься или ищешь?",
+    "Если бы ты мог прожить один день в чужой жизни — чьей и зачем?",
+    "Какую версию себя ты чаще всего показываешь людям — и насколько она настоящая?",
+    "Есть ли что-то, что ты делаешь исключительно ради чужого одобрения?",
+    "Что ты потерял за последние несколько лет и скучаешь по этому?",
+    "Если завтра всё закончится — о чём ты пожалеешь больше всего?",
+    "Есть ли у тебя убеждение, которое ты боишься проверить, потому что оно может оказаться ложным?",
+    "Что ты делаешь, когда тебе плохо, но ты не хочешь никому говорить об этом?",
+    "Чего ты ждёшь от других людей и редко получаешь?",
+    "Ты веришь в то, что делаешь каждый день — или просто движешься по инерции?",
+    "Какой поступок в твоей жизни ты не смог бы оправдать ни перед кем?",
+    "Что тебе труднее всего принять в других людях?",
+    "Есть что-то, что ты боишься полюбить, потому что можешь это потерять?",
+    "Ты когда-нибудь чувствовал, что притворяешься живым?"
+  ],
+  social: [
+    "Кто из присутствующих, по-твоему, выглядит наиболее уверенно в себе — и на самом деле таким не является?",
+    "С кем здесь ты бы никогда не поехал в длинное путешествие?",
+    "Что ты думаешь про кого-то из компании, но никогда не говорил вслух?",
+    "Ты кого-то здесь обсуждал за спиной? Что именно говорил?",
+    "Кто из присутствующих тебя раздражает — и за что конкретно?",
+    "С кем здесь у тебя было что-то большее, чем просто дружба?",
+    "Кому из компании ты больше всего завидуешь?",
+    "Кто из здесь сидящих изменился в худшую сторону за последние годы?",
+    "Что ты никогда не скажешь в лицо кому-то из присутствующих — но думаешь об этом?",
+    "Есть ли кто-то здесь, кому ты чем-то должен (морально) и не хочешь признавать это?",
+    "С кем из компании тебе было сложнее всего — и почему?",
+    "Кому здесь ты доверяешь меньше всего и почему?",
+    "Если бы нужно было уехать с одним человеком из компании на необитаемый остров — кого бы ты НЕ взял?",
+    "Есть ли кто-то здесь, чьё мнение о тебе тебе особенно важно?",
+    "Кому из присутствующих ты когда-нибудь желал чего-то плохого?",
+    "С кем здесь у тебя самые токсичные отношения, при этом вы продолжаете общаться?",
+    "Кого из компании ты считаешь наиболее самовлюблённым?",
+    "Есть ли что-то, что ты сделал для кого-то здесь и потом пожалел об этом?",
+    "Кто из присутствующих, по-твоему, врёт чаще всего?",
+    "Кому здесь ты никогда не одолжил бы деньги — и почему?",
+    "Что ты делаешь, когда кто-то из компании тебя разочаровывает — молчишь или говоришь прямо?",
+    "Есть ли кто-то здесь, с кем ты чувствуешь себя немного не в своей тарелке?",
+    "Кто из присутствующих умеет манипулировать людьми лучше всего?",
+    "Был ли момент, когда кто-то из компании тебя предал — пусть и по мелочи?",
+    "Если бы ты мог анонимно сказать одному человеку здесь что-то важное — кому и что?",
+    "Кому из присутствующих ты больше всего рад — и почему именно ему?",
+    "Есть ли кто-то в компании, за кого ты переживаешь прямо сейчас?",
+    "Кто здесь, по-твоему, несчастен, но тщательно это скрывает?",
+    "Если бы эта компания была командой — кто был бы самым ненадёжным участником?",
+    "С кем из присутствующих ты хотел бы поговорить по-настоящему, но так и не решился?"
+  ],
+  romantic: [
+    "Кого из присутствующих ты нашёл(-а) привлекательным при первой встрече?",
+    "Что тебя больше всего заводит в человеке?",
+    "Какой твой самый смелый флирт — и чем он закончился?",
+    "Ты когда-нибудь влюблялся(-ась) в друга — и что с этим сделал(-а)?",
+    "Что ты делаешь, когда кто-то явно тебе нравится, но ты боишься признаться?",
+    "Самый дерзкий поступок ради человека, который тебе нравился?",
+    "У тебя есть тип людей, к которым ты тянешься — опиши его честно",
+    "Что сразу привлекает твоё внимание в человеке — и что сразу отталкивает?",
+    "Ты когда-нибудь состоял(-а) в отношениях, о которых потом жалел(-а)?",
+    "Что тебя больше возбуждает — физическое или интеллектуальное притяжение?",
+    "Опиши своё самое странное свидание",
+    "Ты когда-нибудь влюблялся(-ась) не в того человека — и осознавал(-а) это слишком поздно?",
+    "Что ты ищешь в отношениях — то, чего тебе не хватает, или то, что уже есть?",
+    "Ты готов(-а) к отношениям прямо сейчас — или нет, и почему?",
+    "Самая честная причина, по которой твои прошлые отношения не получились",
+    "Что ты никогда не скажешь первым(-ой) человеку, который тебе нравится?",
+    "Ты когда-нибудь флиртовал(-а) с кем-то просто ради самооценки, не испытывая настоящего интереса?",
+    "Что тебя пугает в близости с другим человеком?",
+    "Какой комплимент тебя заводит сильнее всего?",
+    "Если бы ты мог(-ла) выбрать кого-то из присутствующих как идеального партнёра — кого и почему?",
+    "Ты когда-нибудь продолжал(-а) общение, зная, что другой человек в тебя влюблён, и тебе это было выгодно?",
+    "Что ты считаешь изменой — физический контакт или эмоциональную близость?",
+    "Ты когда-нибудь влюблялся(-ась) в человека, с которым точно нельзя быть вместе?",
+    "Что бы ты сделал(-а), если бы узнал(-а), что кто-то здесь в тебя влюблён?",
+    "Опиши идеальный вечер с человеком, который тебе нравится",
+    "Что для тебя важнее в партнёре — честность или страсть?",
+    "Ты когда-нибудь игнорировал(-а) человека, потому что он нравился тебе слишком сильно?",
+    "Самое смелое, что ты когда-либо написал(-а) кому-то ночью?",
+    "Ты боишься быть брошенным(-ой) или боишься ранить другого человека?",
+    "Как ты понимаешь, что влюблён(-а) — по каким признакам в себе?"
+  ],
+  wild: [
+    "Если бы тебе нужно было поменяться телом с кем-то из компании на день — с кем и что бы ты делал(-а)?",
+    "Что бы ты сделал(-а), если бы узнал(-а), что у тебя осталась одна неделя жизни?",
+    "Опиши себя тремя словами так, как сказал(-а) бы твой враг",
+    "Если бы твоя жизнь была сериалом — что бы было в следующей серии?",
+    "Какой закон ты бы отменил, если бы мог(-ла)?",
+    "Что ты сделал бы, если бы тебе дали 1 млн рублей и нужно было потратить за 24 часа?",
+    "Ты бы предпочёл знать дату своей смерти или нет — и почему?",
+    "Если бы можно было стереть одно воспоминание навсегда — ты бы воспользовался(-ась)?",
+    "Какое суперспособность ты бы выбрал(-а) и как бы злоупотреблял(-а) ею?",
+    "Тебя можно подкупить? Что нужно предложить?",
+    "Если бы ты был(-а) напитком — каким и почему?",
+    "Какое самое безумное решение в твоей жизни оказалось правильным?",
+    "Ты бы согласился(-ась) прожить год без телефона за 3 миллиона рублей?",
+    "Что ты сделал бы иначе, если бы прожил(-а) прошлый год заново?",
+    "Если бы все твои мысли озвучивались вслух один день — чем бы это закончилось?",
+    "Какой вопрос ты бы никогда не задал(-а) на игре в правду — и почему именно этот?",
+    "Кем ты был(-а) бы в средневековье?",
+    "Если бы можно было знать одну правду о любом человеке здесь — что бы ты спросил(-а) и о ком?",
+    "На что ты способен(-на) ради острых ощущений?",
+    "Если бы твои контакты в телефоне узнали о тебе одну вещь — что было бы хуже всего?",
+    "Ты бы предпочёл 5 лет жить в роскоши, но потом стать банкротом, или средне, но стабильно?",
+    "Что ты считаешь нормальным, хотя большинство людей назвали бы это странным?",
+    "Если бы можно было помнить только 10 воспоминаний — какие бы ты оставил(-а)?",
+    "Как бы выглядел твой день, если бы не нужно было ни о чём беспокоиться?",
+    "Ты бы согласился(-ась) прожить один год, не зная, кто из близких жив?",
+    "Что стало бы последней каплей для тебя в любых отношениях?",
+    "Если бы ты мог(-ла) поговорить с собой из прошлого — что бы ты сказал(-а) и какой возраст выбрал(-а)?",
+    "Что страшнее — быть полностью одному или всегда быть среди людей?",
+    "Если бы твоя смерть стала мемом — каким именно?",
+    "Опиши смысл своей жизни одним предложением. Прямо сейчас. Без подготовки."
+  ]
+};
+
+const CAT_LABELS = {
+  shame:    { emoji: '😳', label: 'Стыдное',    color: '#ff6b9d' },
+  deep:     { emoji: '🌀', label: 'Глубокое',   color: '#a78bfa' },
+  social:   { emoji: '👥', label: 'Социальное', color: '#34d399' },
+  romantic: { emoji: '🔥', label: 'Романтика',  color: '#fb923c' },
+  wild:     { emoji: '🤪', label: 'Безумное',   color: '#f59e0b' },
+};
+
+let deck = [];
+let currentIndex = 0;
+
+// Category toggle
+document.querySelectorAll('.cat-tag').forEach(tag => {
+  tag.addEventListener('click', () => {
+    tag.classList.toggle('selected');
+    tag.classList.toggle('unselected');
+    updateCount();
+  });
+});
+
+function getSelectedCats() {
+  return [...document.querySelectorAll('.cat-tag.selected')].map(t => t.dataset.cat);
+}
+
+function updateCount() {
+  const cats = getSelectedCats();
+  let total = cats.reduce((sum, c) => sum + QUESTIONS[c].length, 0);
+  document.getElementById('count-info').textContent = total + ' вопросов выбрано';
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startGame() {
+  const cats = getSelectedCats();
+  if (!cats.length) { alert('Выбери хотя бы одну категорию!'); return; }
+
+  deck = [];
+  cats.forEach(cat => {
+    QUESTIONS[cat].forEach(q => deck.push({ cat, q }));
+  });
+  deck = shuffle(deck);
+  currentIndex = 0;
+
+  showScreen('game');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  if (currentIndex >= deck.length) {
+    showScreen('end');
+    return;
+  }
+  const { cat, q } = deck[currentIndex];
+  const info = CAT_LABELS[cat];
+
+  const badge = document.getElementById('cat-badge');
+  badge.textContent = info.emoji + ' ' + info.label;
+  badge.style.color = info.color;
+  badge.style.borderColor = info.color + '44';
+  badge.style.background = info.color + '11';
+
+  document.getElementById('question-number').textContent = 'ВОПРОС ' + (currentIndex + 1);
+  document.getElementById('question-text').textContent = q;
+
+  const fill = ((currentIndex) / deck.length) * 100;
+  document.getElementById('progress-fill').style.width = fill + '%';
+  document.getElementById('progress-label').textContent = currentIndex + ' / ' + deck.length;
+}
+
+function nextQuestion() {
+  const card = document.getElementById('question-card');
+  card.classList.add('animating');
+  setTimeout(() => {
+    currentIndex++;
+    renderQuestion();
+    card.classList.remove('animating');
+  }, 200);
+}
+
+function skipQuestion() {
+  currentIndex++;
+  renderQuestion();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() {
+  showScreen('intro');
+}
+
+function restartGame() {
+  showScreen('intro');
+}
+</script>
+</body>
+</html>

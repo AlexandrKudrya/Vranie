@@ -79,8 +79,39 @@
     letter-spacing: 4px;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 60px;
+    margin-bottom: 40px;
   }
+
+  /* ===== VERSION TABS ===== */
+  .version-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 4px;
+    margin-bottom: 40px;
+  }
+  .version-tab {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .version-tab.active {
+    background: linear-gradient(135deg, #ff3c6e, #ff8c42);
+    color: white;
+  }
+  .version-tab:not(.active):hover { color: var(--text); }
 
   .categories-preview {
     display: flex;
@@ -88,7 +119,7 @@
     gap: 10px;
     justify-content: center;
     max-width: 500px;
-    margin-bottom: 50px;
+    margin-bottom: 32px;
   }
 
   .cat-tag {
@@ -106,6 +137,7 @@
   .cat-tag.selected { opacity: 1; }
   .cat-tag.unselected { opacity: 0.35; }
 
+  /* V1 category colors */
   .cat-tag[data-cat="shame"]    { color: #ff6b9d; border-color: #ff6b9d33; background: #ff6b9d0d; }
   .cat-tag[data-cat="deep"]     { color: #a78bfa; border-color: #a78bfa33; background: #a78bfa0d; }
   .cat-tag[data-cat="social"]   { color: #34d399; border-color: #34d39933; background: #34d3990d; }
@@ -117,6 +149,91 @@
   .cat-tag.selected[data-cat="social"]   { background: #34d39922; }
   .cat-tag.selected[data-cat="romantic"] { background: #fb923c22; }
   .cat-tag.selected[data-cat="wild"]     { background: #f59e0b22; }
+
+  /* V2 category colors */
+  .cat-tag[data-cat="psych"]       { color: #818cf8; border-color: #818cf833; background: #818cf80d; }
+  .cat-tag[data-cat="honest"]      { color: #2dd4bf; border-color: #2dd4bf33; background: #2dd4bf0d; }
+  .cat-tag[data-cat="dark"]        { color: #c084fc; border-color: #c084fc33; background: #c084fc0d; }
+  .cat-tag[data-cat="players_cat"] { color: #fb7185; border-color: #fb718533; background: #fb71850d; }
+
+  .cat-tag.selected[data-cat="psych"]       { background: #818cf822; }
+  .cat-tag.selected[data-cat="honest"]      { background: #2dd4bf22; }
+  .cat-tag.selected[data-cat="dark"]        { background: #c084fc22; }
+  .cat-tag.selected[data-cat="players_cat"] { background: #fb718522; }
+
+  /* ===== PLAYER MANAGEMENT ===== */
+  .player-section {
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 32px;
+  }
+  .player-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .player-input {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: 'Onest', sans-serif;
+    font-size: 14px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .player-input:focus { border-color: var(--accent); }
+  .add-player-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Onest', sans-serif;
+    font-size: 13px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .add-player-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .player-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .player-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 12px 6px 14px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .chip-remove {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.2s;
+  }
+  .chip-remove:hover { color: var(--accent); }
+
+  .player-hint {
+    font-size: 12px;
+    color: #fb7185;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+    min-height: 18px;
+  }
 
   .start-btn {
     background: linear-gradient(135deg, #ff3c6e, #ff8c42);
@@ -343,9 +460,25 @@
   }
   .restart-btn:hover { background: var(--accent); color: white; }
 
+  /* ===== PLAYER NAME HIGHLIGHT ===== */
+  .player-name {
+    background: linear-gradient(135deg, #ff3c6e22, #ff8c4222);
+    border: 1px solid #ff3c6e44;
+    border-radius: 6px;
+    padding: 1px 7px;
+    color: #ff8c42;
+    font-weight: 500;
+  }
+  .player-name--alt {
+    background: linear-gradient(135deg, #fb718522, #c084fc22);
+    border-color: #fb718544;
+    color: #fb7185;
+  }
+
   @media (max-width: 480px) {
     .question-card { padding: 36px 24px; }
     .controls { flex-direction: column; }
+    .version-tab { padding: 10px 14px; font-size: 10px; }
   }
 </style>
 </head>
@@ -356,14 +489,37 @@
   <div class="glow-blob blob1"></div>
   <div class="glow-blob blob2"></div>
   <div class="logo">ПРАВДА</div>
-  <div class="tagline">200 вопросов · 18+</div>
+  <div class="tagline" id="tagline">200 вопросов · 18+</div>
 
-  <div class="categories-preview">
+  <div class="version-tabs">
+    <button class="version-tab active" data-version="v1" onclick="switchVersion('v1')">КЛАССИКА</button>
+    <button class="version-tab" data-version="v2" onclick="switchVersion('v2')">ВЕРСИЯ 2.0 ✨</button>
+  </div>
+
+  <div class="categories-preview" id="cats-v1">
     <span class="cat-tag selected" data-cat="shame">😳 Стыдное</span>
     <span class="cat-tag selected" data-cat="deep">🌀 Глубокое</span>
     <span class="cat-tag selected" data-cat="social">👥 Социальное</span>
     <span class="cat-tag selected" data-cat="romantic">🔥 Романтика</span>
     <span class="cat-tag selected" data-cat="wild">🤪 Безумное</span>
+  </div>
+
+  <div class="categories-preview" id="cats-v2" style="display:none">
+    <span class="cat-tag selected" data-cat="psych">🧠 Психология</span>
+    <span class="cat-tag selected" data-cat="honest">🎯 Честность</span>
+    <span class="cat-tag selected" data-cat="dark">🌑 Тёмная сторона</span>
+    <span class="cat-tag selected" data-cat="players_cat">👤 С игроками</span>
+  </div>
+
+  <div class="player-section" id="player-section" style="display:none">
+    <div class="player-input-row">
+      <input type="text" id="player-input" class="player-input"
+             placeholder="Имя игрока..." maxlength="20"
+             onkeydown="if(event.key==='Enter') addPlayer()">
+      <button class="add-player-btn" onclick="addPlayer()">+ Добавить</button>
+    </div>
+    <div class="player-chips" id="player-chips"></div>
+    <div class="player-hint" id="player-hint"></div>
   </div>
 
   <button class="start-btn" onclick="startGame()">НАЧАТЬ ИГРУ</button>
@@ -380,7 +536,7 @@
       </div>
       <div class="progress-label" id="progress-label">0 / 0</div>
     </div>
-    <div class="game-logo">ПРАВДА</div>
+    <div class="game-logo" id="game-logo">ПРАВДА</div>
   </div>
 
   <div class="question-area">
@@ -586,26 +742,168 @@ const CAT_LABELS = {
   wild:     { emoji: '🤪', label: 'Безумное',   color: '#f59e0b' },
 };
 
+const CAT_LABELS_V2 = {
+  psych:       { emoji: '🧠', label: 'Психология',     color: '#818cf8' },
+  honest:      { emoji: '🎯', label: 'Честность',      color: '#2dd4bf' },
+  dark:        { emoji: '🌑', label: 'Тёмная сторона', color: '#c084fc' },
+  players_cat: { emoji: '👤', label: 'С игроками',     color: '#fb7185' },
+};
+
+const QUESTIONS_V2 = {
+  psych: [
+    "Какую маску ты носишь чаще всего — и почему не снимаешь её?",
+    "Что в тебе самом ты до сих пор не принял?",
+    "Какое убеждение о себе мешает тебе жить?",
+    "Когда ты последний раз плакал по-настоящему? Из-за чего?",
+    "Что ты говоришь, что любишь — но на самом деле терпеть не можешь?",
+    "Если бы твой внутренний критик говорил вслух — что бы услышали окружающие?",
+    "Опиши своё детство одним словом. Почему именно оно?",
+    "Что ты делаешь, когда одиноко, но не хочешь признавать это?",
+    "Какой момент из прошлого ты прокручиваешь чаще всего?",
+    "Что в тебе люди обычно неправильно понимают?",
+    "Когда ты последний раз был по-настоящему честен с собой?",
+    "Что ты больше всего боишься обнаружить в себе?",
+    "Назови вещь, которую ты никогда не простишь себе.",
+    "Какая эмоция у тебя «под запретом» — та, что ты не позволяешь себе чувствовать?",
+    "Если бы ты мог удалить одно воспоминание — что бы выбрал? И почему не удаляешь?",
+    "Что тебя триггерит сильнее всего — и что это говорит о тебе?",
+    "Опиши себя глазами человека, который в тебе разочаровался.",
+    "Какую версию себя ты хоронишь прямо сейчас?",
+    "Что ты ищешь в людях, но никогда не находишь?",
+    "Какой твой главный защитный механизм — то, как ты избегаешь боли?",
+    "Если бы твои родители услышали твои мысли за последнюю неделю — что бы почувствовали?",
+    "Чего ты никогда не скажешь вслух, потому что боишься, что это станет правдой?",
+    "Что ты делаешь не потому что хочешь, а потому что не знаешь, как остановиться?",
+    "Если бы у тебя была одна минута объяснить себя — что бы ты сказал?",
+    "Чего ты на самом деле хочешь от жизни — прямо сейчас, честно?"
+  ],
+  honest: [
+    "Какую ложь ты говоришь чаще всего — и кому?",
+    "Что ты никогда не скажешь своим родителям?",
+    "Какое решение в жизни ты принял из страха, а не из желания?",
+    "Что ты делаешь, когда думаешь, что никто не видит?",
+    "Если бы все твои переписки за месяц стали публичными — что смутило бы больше всего?",
+    "Кому ты завидуешь прямо сейчас? За что именно?",
+    "Что ты врёшь сам себе каждый день?",
+    "Назови человека, которому ты причинил боль и так и не извинился.",
+    "Что ты осуждаешь в других, но делаешь сам?",
+    "Когда ты последний раз предал кого-то — даже в мелочи?",
+    "Что ты никогда не признаёшь публично, но думаешь об этом?",
+    "Назови своё самое нечестное достижение.",
+    "Какую черту в себе ты называешь «особенностью», хотя знаешь, что это недостаток?",
+    "Что ты хочешь, но стыдишься хотеть?",
+    "Если бы нельзя было врать следующие 24 часа — что изменилось бы в твоей жизни?",
+    "Что ты делаешь ради одобрения, хотя давно перестал в это верить?",
+    "Кому из людей ты должен что-то — и не отдаёшь?",
+    "Когда ты притворяешься, что тебе хорошо, хотя это не так?",
+    "Назови что-то, что ты делаешь «для других», но на самом деле для себя.",
+    "Какой поступок ты совершил и до сих пор не понял — правильный или нет?",
+    "Что тебе говорили как правду — но это была чужая ложь?",
+    "Если бы твоя жизнь была книгой — какую главу ты бы вырвал?",
+    "Что ты откладываешь уже давно — и знаешь, что никогда не сделаешь?",
+    "Признайся в чём-то прямо сейчас. Без объяснений. Просто скажи.",
+    "Ты счастлив прямо сейчас? Настоящий ответ, не вежливый."
+  ],
+  dark: [
+    "Какая твоя самая тёмная мысль, которая когда-либо приходила тебе в голову?",
+    "Что ты хотел бы сделать, но не делаешь из-за последствий?",
+    "Опиши момент, когда ты был по-настоящему жесток — даже если только в мыслях.",
+    "Что бы ты сделал, если бы знал, что никаких последствий не будет?",
+    "Какое желание ты считаешь неприемлемым — но оно всё равно есть?",
+    "Что тебя притягивает в том, что тебе «нельзя»?",
+    "Опиши свой самый деструктивный импульс.",
+    "Если бы у тебя было 24 часа полной анонимности — что бы ты сделал?",
+    "Какой твой порок ты считаешь частью себя?",
+    "Что в тебе люди боялись бы увидеть, если бы могли?",
+    "Опиши момент, когда ты почувствовал что-то «плохое» — и тебе это понравилось.",
+    "Чего ты по-настоящему хочешь, но считаешь себя недостойным?",
+    "Что тебя привлекает в разрушении?",
+    "Назови фантазию, о которой ты никому не рассказывал.",
+    "Если бы тебе нужно было причинить боль кому-то ради себя — ты бы смог?",
+    "Что из своих «грехов» ты на самом деле не считаешь грехом?",
+    "Какой твой самый эгоистичный поступок?",
+    "Что ты думаешь о смерти, когда остаёшься один?",
+    "Если бы правила не существовали — ты бы стал другим человеком?",
+    "Назови то, за что тебя могли бы осудить — и что ты при этом считаешь правильным.",
+    "Что ты находишь красивым в том, что считается уродливым?",
+    "Какую часть себя ты боишься освободить?",
+    "Если бы ты мог безнаказанно причинить боль одному человеку — кому и за что?",
+    "Что у тебя внутри такое, что ты не показал бы даже самому близкому?",
+    "Что в тебе есть от монстра?"
+  ],
+  players_cat: [
+    "{player}, что тебя раздражает в ком-то из этой комнаты прямо сейчас?",
+    "{player}, что ты думаешь обо мне на самом деле?",
+    "Все смотрят на {player}: что в нём/ней самое привлекательное — и что самое раздражающее?",
+    "{player}, расскажи что-то, что ты никогда не говорил никому из нас.",
+    "Если бы {player} был персонажем фильма — кем бы он/она был и почему?",
+    "{player}, кому ты меньше всего доверяешь в этой комнате?",
+    "Что {player}, скорее всего, скрывает от всех нас?",
+    "{player}, что бы ты изменил в ком-то из нас, если мог?",
+    "Если {player} напишет автобиографию — какой будет первая строка?",
+    "{player}, назови что-то настоящее о себе, о чём большинство не знает.",
+    "Что {player} думает о {other_player} на самом деле — скажи честно.",
+    "{player}, если бы ты мог дать кому-то из нас один совет — кому и какой?",
+    "Что больше всего изменилось в {player} за то время, что мы его/её знаем?",
+    "{player}, признайся в чём-то, что давно хотел сказать кому-то из нас.",
+    "{player}, что в тебе самом тебя больше всего удивляет?",
+    "Если бы {player} мог прожить жизнь сначала — что бы изменил?",
+    "{player}, какой твой главный страх, связанный с людьми?",
+    "Что {player} ищет в отношениях, но никогда не получает?",
+    "{player}, опиши себя тремя словами. Теперь пусть {other_player} добавит одно слово.",
+    "Если бы {other_player} нуждался в помощи в 3 ночи — позвонил бы {player}?",
+    "{player}, есть ли кто-то в этой комнате, с кем ты хотел бы поговорить наедине?",
+    "Что {player} никогда не признает публично — но все и так знают?",
+    "{player}, твой честный ответ: ты счастлив прямо сейчас?",
+    "Если бы {player} и {other_player} поменялись жизнями на неделю — что изменилось бы?",
+    "{player}, что ты думаешь о себе, когда никто не смотрит?"
+  ]
+};
+
 let deck = [];
 let currentIndex = 0;
+let currentVersion = 'v1';
+let players = [];
 
-// Category toggle
-document.querySelectorAll('.cat-tag').forEach(tag => {
-  tag.addEventListener('click', () => {
-    tag.classList.toggle('selected');
-    tag.classList.toggle('unselected');
+// Category toggle — event delegation covers both V1 and V2 tags
+document.getElementById('intro').addEventListener('click', function(e) {
+  if (e.target.classList.contains('cat-tag')) {
+    e.target.classList.toggle('selected');
+    e.target.classList.toggle('unselected');
     updateCount();
-  });
+  }
 });
 
+function switchVersion(ver) {
+  currentVersion = ver;
+  document.querySelectorAll('.version-tab').forEach(t =>
+    t.classList.toggle('active', t.dataset.version === ver));
+  document.getElementById('cats-v1').style.display = ver === 'v1' ? 'flex' : 'none';
+  document.getElementById('cats-v2').style.display = ver === 'v2' ? 'flex' : 'none';
+  document.getElementById('player-section').style.display = ver === 'v2' ? 'block' : 'none';
+  document.getElementById('tagline').textContent = ver === 'v2' ? '100 вопросов · 18+' : '200 вопросов · 18+';
+  updateCount();
+}
+
 function getSelectedCats() {
-  return [...document.querySelectorAll('.cat-tag.selected')].map(t => t.dataset.cat);
+  const containerId = currentVersion === 'v1' ? 'cats-v1' : 'cats-v2';
+  return [...document.querySelectorAll('#' + containerId + ' .cat-tag.selected')]
+    .map(t => t.dataset.cat);
 }
 
 function updateCount() {
   const cats = getSelectedCats();
-  let total = cats.reduce((sum, c) => sum + QUESTIONS[c].length, 0);
+  const source = currentVersion === 'v1' ? QUESTIONS : QUESTIONS_V2;
+  let total = cats.reduce((sum, c) => sum + (source[c] ? source[c].length : 0), 0);
   document.getElementById('count-info').textContent = total + ' вопросов выбрано';
+  if (currentVersion === 'v2') {
+    const needsPlayers = cats.includes('players_cat');
+    const enoughPlayers = players.length >= 2;
+    const hint = document.getElementById('player-hint');
+    hint.textContent = (needsPlayers && !enoughPlayers)
+      ? 'Добавь минимум 2 игрока для категории «С игроками»'
+      : '';
+  }
 }
 
 function shuffle(arr) {
@@ -620,16 +918,43 @@ function shuffle(arr) {
 function startGame() {
   const cats = getSelectedCats();
   if (!cats.length) { alert('Выбери хотя бы одну категорию!'); return; }
+  if (currentVersion === 'v2' && cats.includes('players_cat') && players.length < 2) {
+    alert('Добавь минимум 2 игрока для категории «С игроками»!');
+    return;
+  }
 
+  const source = currentVersion === 'v1' ? QUESTIONS : QUESTIONS_V2;
   deck = [];
   cats.forEach(cat => {
-    QUESTIONS[cat].forEach(q => deck.push({ cat, q }));
+    source[cat].forEach(q => deck.push({ cat, q }));
   });
   deck = shuffle(deck);
   currentIndex = 0;
 
+  document.getElementById('game-logo').textContent = currentVersion === 'v2' ? 'ПРАВДА 2.0' : 'ПРАВДА';
+
   showScreen('game');
   renderQuestion();
+}
+
+function sanitizeName(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function substitutePlayersHTML(q) {
+  if (players.length < 2) return q;
+  const i1 = Math.floor(Math.random() * players.length);
+  let i2;
+  do { i2 = Math.floor(Math.random() * players.length); } while (i2 === i1);
+  const p1 = sanitizeName(players[i1]);
+  const p2 = sanitizeName(players[i2]);
+  return q
+    .replace(/\{player\}/g, '<span class="player-name">' + p1 + '</span>')
+    .replace(/\{other_player\}/g, '<span class="player-name player-name--alt">' + p2 + '</span>');
 }
 
 function renderQuestion() {
@@ -638,7 +963,8 @@ function renderQuestion() {
     return;
   }
   const { cat, q } = deck[currentIndex];
-  const info = CAT_LABELS[cat];
+  const labelMap = currentVersion === 'v2' ? CAT_LABELS_V2 : CAT_LABELS;
+  const info = labelMap[cat];
 
   const badge = document.getElementById('cat-badge');
   badge.textContent = info.emoji + ' ' + info.label;
@@ -647,7 +973,13 @@ function renderQuestion() {
   badge.style.background = info.color + '11';
 
   document.getElementById('question-number').textContent = 'ВОПРОС ' + (currentIndex + 1);
-  document.getElementById('question-text').textContent = q;
+
+  const textEl = document.getElementById('question-text');
+  if (currentVersion === 'v2' && q.indexOf('{') !== -1) {
+    textEl.innerHTML = substitutePlayersHTML(q);
+  } else {
+    textEl.textContent = q;
+  }
 
   const fill = ((currentIndex) / deck.length) * 100;
   document.getElementById('progress-fill').style.width = fill + '%';
@@ -675,11 +1007,37 @@ function showScreen(id) {
 }
 
 function goHome() {
+  document.getElementById('game-logo').textContent = 'ПРАВДА';
   showScreen('intro');
 }
 
 function restartGame() {
+  document.getElementById('game-logo').textContent = 'ПРАВДА';
   showScreen('intro');
+}
+
+function addPlayer() {
+  const input = document.getElementById('player-input');
+  const name = input.value.trim();
+  if (!name || players.includes(name)) { input.value = ''; return; }
+  players.push(name);
+  input.value = '';
+  renderPlayerChips();
+  updateCount();
+}
+
+function removePlayer(name) {
+  players = players.filter(function(p) { return p !== name; });
+  renderPlayerChips();
+  updateCount();
+}
+
+function renderPlayerChips() {
+  const container = document.getElementById('player-chips');
+  container.innerHTML = players.map(function(name) {
+    return '<span class="player-chip">' + sanitizeName(name) +
+      '<button class="chip-remove" onclick="removePlayer(' + JSON.stringify(name) + ')">×</button></span>';
+  }).join('');
 }
 </script>
 </body>
